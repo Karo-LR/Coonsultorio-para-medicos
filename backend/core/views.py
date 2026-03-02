@@ -1,13 +1,10 @@
-from rest_framework import viewsets
-from .models import Paciente, Cita, Consulta, Receta, Expediente
-from .serializers import *
-
+from rest_framework.permissions import IsAuthenticated
 
 class PacienteViewSet(viewsets.ModelViewSet):
     queryset = Paciente.objects.all()
     serializer_class = PacienteSerializer
-
-
+    permission_classes = [IsAuthenticated]
+    
 class ExpedienteViewSet(viewsets.ModelViewSet):
     queryset = Expediente.objects.all()
     serializer_class = ExpedienteSerializer
