@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["coonsultorio-para-medicos.onrender.com"]
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
