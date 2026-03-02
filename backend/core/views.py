@@ -1,7 +1,4 @@
-from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import Expediente, Paciente
-from .serializers import PacienteSerializer
 
 class PacienteViewSet(viewsets.ModelViewSet):
     queryset = Paciente.objects.all()
