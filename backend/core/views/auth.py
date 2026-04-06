@@ -1,0 +1,19 @@
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        perfil = getattr(request.user, "perfil", None)
+        return Response(
+            {
+                "id": request.user.id,
+                "username": request.user.username,
+                "nombre": request.user.get_full_name().strip() or request.user.username,
+                "email": request.user.email,
+                "rol": getattr(perfil, "rol", ""),
+            }
+        )

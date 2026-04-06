@@ -16,3 +16,6 @@ Thumbs.db
 
 # Variables de entorno
 .env
+
+# Logs locales
+*.log

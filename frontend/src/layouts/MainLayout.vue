@@ -1,53 +1,104 @@
 <template>
+  <div class="shell">
+    <AppSidebar
+      :user="user"
+      :mobile-open="mobileOpen"
+      @close-mobile="mobileOpen = false"
+      @logout="logout"
+    />
 
-<div class="layout">
+    <div class="shell__content">
+      <header class="shell__header card">
+        <div>
+          <p class="eyebrow">Gestión clínica</p>
+          <h1>{{ currentTitle }}</h1>
+        </div>
 
-<aside class="sidebar">
+        <div class="shell__header-actions">
+          <button class="ghost-button mobile-only" @click="mobileOpen = !mobileOpen">
+            Menú
+          </button>
+          <router-link class="ghost-button" to="/sistema/perfil">
+            {{ user?.nombre || "Mi perfil" }}
+          </router-link>
+        </div>
+      </header>
 
-<h2>Consultorio</h2>
-
-<router-link to="/dashboard">Dashboard</router-link>
-<router-link to="/pacientes">Pacientes</router-link>
-<router-link to="/citas">Citas</router-link>
-<router-link to="/expedientes">Expedientes</router-link>
-<router-link to="/consultas">Consultas</router-link>
-
-</aside>
-
-<main class="content">
-<router-view/>
-</main>
-
-</div>
-
+      <main class="shell__main">
+        <router-view />
+      </main>
+    </div>
+  </div>
 </template>
 
-<style>
+<script setup>
+import { computed, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-.layout{
-display:flex;
-height:100vh;
+import AppSidebar from "../components/AppSidebar.vue";
+import { clearSession, getStoredUser } from "../services/session";
+
+const route = useRoute();
+const router = useRouter();
+const mobileOpen = ref(false);
+const user = ref(getStoredUser());
+
+const currentTitle = computed(() => route.meta.title || "Panel");
+
+function logout() {
+  clearSession();
+  router.push("/login");
+}
+</script>
+
+<style scoped>
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  background:
+    radial-gradient(circle at top left, rgba(209, 250, 229, 0.9), transparent 30%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
 }
 
-.sidebar{
-width:200px;
-background:#2d8cf0;
-color:white;
-padding:20px;
-display:flex;
-flex-direction:column;
-gap:15px;
+.shell__content {
+  min-width: 0;
+  padding: 24px;
 }
 
-.sidebar a{
-color:white;
-text-decoration:none;
+.shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.content{
-flex:1;
-padding:20px;
-background:#f5f7fb;
+.shell__header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
+.shell__main {
+  min-width: 0;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .shell__content {
+    padding: 16px;
+  }
+
+  .mobile-only {
+    display: inline-flex;
+  }
+}
 </style>
