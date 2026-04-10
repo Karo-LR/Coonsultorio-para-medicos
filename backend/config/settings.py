@@ -98,7 +98,7 @@ else:
             "NAME": os.getenv("DB_NAME", "consultorio_db"),
             "USER": os.getenv("DB_USER", "postgres"),
             "PASSWORD": os.getenv("DB_PASSWORD", "root"),
-            "HOST": os.getenv("DB_HOST", "localhost"),
+            "HOST": os.getenv("DB_HOST", "10.0.4.31"),
             "PORT": os.getenv("DB_PORT", "5432" if DB_ENGINE in ("postgresql", "postgres") else "3306"),
         }
     }
