@@ -1,5 +1,4 @@
-import json
-from urllib import parse, request
+from urllib import parse
 
 import bleach
 from django.conf import settings
@@ -116,47 +115,3 @@ def send_password_reset_email(user):
         recipient_list=[user.email],
     )
 
-
-def validate_recaptcha_or_raise(token, action="submit"):
-    if not token:
-        raise serializers.ValidationError(
-            {"detail": "Debes completar el reCAPTCHA antes de continuar."}
-        )
-
-    if not settings.RECAPTCHA_SECRET_KEY:
-        raise serializers.ValidationError(
-            {"detail": "La validacion reCAPTCHA no esta configurada en el servidor."}
-        )
-
-    payload = parse.urlencode(
-        {
-            "secret": settings.RECAPTCHA_SECRET_KEY,
-            "response": token,
-        }
-    ).encode()
-    req = request.Request(
-        "https://www.google.com/recaptcha/api/siteverify",
-        data=payload,
-        method="POST",
-    )
-
-    try:
-        with request.urlopen(req, timeout=settings.RECAPTCHA_TIMEOUT_SECONDS) as response:
-            data = json.loads(response.read().decode("utf-8"))
-    except Exception as exc:
-        raise serializers.ValidationError(
-            {"detail": f"No se pudo validar reCAPTCHA para {action}. Intenta de nuevo."}
-        ) from exc
-
-    if not data.get("success"):
-        error_codes = data.get("error-codes", [])
-        if "missing-input-response" in error_codes:
-            detail = "Debes completar el reCAPTCHA antes de continuar."
-        elif "invalid-input-response" in error_codes:
-            detail = "El token de reCAPTCHA es invalido o expiro. Vuelve a intentarlo."
-        else:
-            detail = "La validacion de reCAPTCHA fallo. Intenta nuevamente."
-
-        raise serializers.ValidationError({"detail": detail})
-
-    return True

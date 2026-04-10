@@ -2,7 +2,6 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-import dj_database_url
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,15 +9,15 @@ load_dotenv(BASE_DIR / ".env", override=True)
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:8080")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:8080")
 ENABLE_SSL_REDIRECT = os.getenv("ENABLE_SSL_REDIRECT", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
         "ALLOWED_HOSTS",
-        "localhost,127.0.0.1,coonsultorio-para-medicos.onrender.com",
+        "localhost,127.0.0.1",
     ).split(",")
     if host.strip()
 ]
@@ -74,9 +73,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-USE_SQLITE = os.getenv("USE_SQLITE", "").lower() in ("1", "true", "yes")
+DB_ENGINE = os.getenv("DB_ENGINE", "postgresql").strip().lower()
 
-if USE_SQLITE:
+if DB_ENGINE == "sqlite":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -84,13 +83,24 @@ if USE_SQLITE:
         }
     }
 else:
+    db_engines = {
+        "postgresql": "django.db.backends.postgresql",
+        "postgres": "django.db.backends.postgresql",
+        "mysql": "django.db.backends.mysql",
+    }
+
+    if DB_ENGINE not in db_engines:
+        raise ValueError("DB_ENGINE debe ser postgresql, mysql o sqlite.")
+
     DATABASES = {
-        "default": dj_database_url.config(
-            default=os.getenv(
-                "DATABASE_URL",
-                "postgresql://postgres:postgres@localhost:5432/consultorio_db",
-            )
-        )
+        "default": {
+            "ENGINE": db_engines[DB_ENGINE],
+            "NAME": os.getenv("DB_NAME", "consultorio_db"),
+            "USER": os.getenv("DB_USER", "postgres"),
+            "PASSWORD": os.getenv("DB_PASSWORD", "root"),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "5432" if DB_ENGINE in ("postgresql", "postgres") else "3306"),
+        }
     }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -125,10 +135,6 @@ SIMPLE_JWT = {
 
 EMAIL_VERIFICATION_TOKEN_MAX_AGE = int(os.getenv("EMAIL_VERIFICATION_TOKEN_MAX_AGE", str(60 * 60 * 24)))
 PASSWORD_RESET_TOKEN_MAX_AGE = int(os.getenv("PASSWORD_RESET_TOKEN_MAX_AGE", str(60 * 30)))
-RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY", "")
-RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY", "")
-RECAPTCHA_TIMEOUT_SECONDS = int(os.getenv("RECAPTCHA_TIMEOUT_SECONDS", "10"))
-
 cors_origins = [
     origin.strip()
     for origin in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:8080,http://127.0.0.1:8080").split(",")
@@ -142,16 +148,7 @@ else:
 
 CORS_ALLOW_CREDENTIALS = True
 
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER or "no-reply@consultorio.local")
-
-if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" if DEBUG else "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@consultorio.local")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -3,7 +3,7 @@ import axios from "axios";
 import { clearSession, getAccessToken, getRefreshToken, setSession } from "./session";
 
 const API_BASE_URL =
-  process.env.VUE_APP_API_URL || "http://127.0.0.1:8000/api/";
+  process.env.VUE_APP_API_URL || "http://localhost:8000/api/";
 
 const api = axios.create({
   baseURL: API_BASE_URL,

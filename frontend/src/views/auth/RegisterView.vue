@@ -87,7 +87,7 @@ const form = reactive({
 
 function extractError(requestError) {
   if (!requestError.response) {
-    return "El backend no esta corriendo o no responde en http://127.0.0.1:8000/api/.";
+    return "El backend no esta corriendo o no responde en http://localhost:8000/api/.";
   }
 
   const data = requestError.response?.data;
