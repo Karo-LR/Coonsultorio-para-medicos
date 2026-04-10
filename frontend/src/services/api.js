@@ -2,8 +2,13 @@ import axios from "axios";
 
 import { clearSession, getAccessToken, getRefreshToken, setSession } from "./session";
 
+const DEFAULT_API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? `${window.location.origin}/api/`
+    : "http://localhost:8000/api/";
+
 const API_BASE_URL =
-  process.env.VUE_APP_API_URL || "http://localhost:8000/api/";
+  process.env.VUE_APP_API_URL || DEFAULT_API_BASE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
