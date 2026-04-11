@@ -29,6 +29,19 @@ $PYTHON_BIN -m venv venv
 
 cp -n .env.aws.example .env || true
 
+DB_HOST_VALUE="$(grep '^DB_HOST=' .env | cut -d '=' -f2- || true)"
+DB_PORT_VALUE="$(grep '^DB_PORT=' .env | cut -d '=' -f2- || true)"
+
+if [ -n "${DB_HOST_VALUE}" ] && [ -n "${DB_PORT_VALUE}" ]; then
+  for attempt in $(seq 1 30); do
+    if pg_isready -h "${DB_HOST_VALUE}" -p "${DB_PORT_VALUE}" >/dev/null 2>&1; then
+      break
+    fi
+    echo "Waiting for PostgreSQL at ${DB_HOST_VALUE}:${DB_PORT_VALUE} (${attempt}/30)"
+    sleep 5
+  done
+fi
+
 ./venv/bin/python manage.py migrate
 ./venv/bin/python manage.py createadmin || true
 ./venv/bin/python manage.py collectstatic --noinput

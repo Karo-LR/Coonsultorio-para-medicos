@@ -121,6 +121,7 @@ Reglas recomendadas:
 
 Archivos listos:
 
+- `deploy/aws/db-user-data.sh`
 - `deploy/aws/backend-user-data.sh`
 - `deploy/aws/frontend-user-data.sh`
 
