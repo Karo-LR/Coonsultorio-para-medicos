@@ -4,7 +4,7 @@ set -euxo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 APP_DIR=/opt/consultorio-app
-REPO_URL="https://github.com/tu-usuario/tu-repo.git"
+REPO_URL="https://github.com/Karo-LR/Coonsultorio-para-medicos.git"
 BRANCH="main"
 
 apt-get update

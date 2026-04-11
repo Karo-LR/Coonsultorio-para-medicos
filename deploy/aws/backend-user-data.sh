@@ -5,7 +5,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 APP_USER=ubuntu
 APP_DIR=/opt/consultorio-app
-REPO_URL="https://github.com/tu-usuario/tu-repo.git"
+REPO_URL="https://github.com/Karo-LR/Coonsultorio-para-medicos.git"
 BRANCH="main"
 PYTHON_BIN=python3
 BACKEND_HOST=127.0.0.1
