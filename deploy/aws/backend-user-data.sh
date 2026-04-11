@@ -30,6 +30,7 @@ $PYTHON_BIN -m venv venv
 cp -n .env.aws.example .env || true
 
 ./venv/bin/python manage.py migrate
+./venv/bin/python manage.py createadmin || true
 ./venv/bin/python manage.py collectstatic --noinput
 
 cat >/etc/systemd/system/consultorio-backend.service <<'EOF'
